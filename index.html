@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="description" content="六十四卦" />
+    <meta name="keywords" content="六十四卦" />
+    <style type="text/css">
+        #mainframe
+        {
+            margin: 0px auto;
+            width: 800px;
+            overflow: hidden;
+            display: block;
+            font-size: 12px;
+        }
+        #orignalMsg, #afterMsg
+        {
+            width: 600px;
+            overflow-y: auto;
+            display: block;
+            resize: none;
+            margin: 0 100px;
+        }
+        #orignalMsg
+        {
+            height: 80px;
+        }
+        #afterMsg
+        {
+            height: 280px;
+        }
+        input.Btn
+        {
+            cursor: pointer;
+            padding: 5px;
+            font-size: 15px;
+        }
+        body, p, div.centerBlk
+        {
+            text-align: center;
+        }
+        p.title
+        {
+            font-size: 200%;
+            font-weight: bold;
+            font-family: 微软雅黑,黑体;
+            margin:15px;
+        }
+        p.helptext
+        {
+            text-align:left;
+            font-size: 15px;
+            line-height:1.5em;
+            text-indent: 2em;
+            
+        }
+        textarea
+        {
+            padding: 5px;
+            font-size: 12px;
+            outline: none;
+            text-shadow: 0px 1px 0px #fff;
+            -webkit-border-radius: 3px;
+            -moz-border-radius: 3px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            -webkit-transition: .3s ease-in-out;
+            -moz-transition: .3s ease-in-out;
+            -o-transition: .3s ease-in-out;
+        }
+        
+        textarea:focus
+        {
+            border: 1px solid #fafafa;
+            -webkit-box-shadow: 0px 0px 6px #007eff;
+            -moz-box-shadow: 0px 0px 5px #007eff;
+            box-shadow: 0px 0px 5px #007eff;
+        }
+        textarea::-webkit-input-placeholder
+        {
+            color: #999;
+            -webkit-transition: color.5s;
+        }
+        textarea:focus::-webkit-input-placeholder, textarea:hover::-webkit-input-placeholder
+        {
+            color: #c2c2c2;
+            -webkit-transition: color.5s;
+        }
+        .centerBlk
+        {
+            margin: 10px 0px;
+            float: left;
+            text-align: left;
+            padding: 0 100px;
+        }
+        #hintMsg
+        {
+            clear: both;
+        }
+        .helpBlk
+        {
+            float: right;
+            margin: 10px 0px;
+            padding: 0 100px;
+        }
+        .img
+        {
+            border: 0px;
+        }
+        .black_overlay
+        {
+            display: none;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 1001;
+            -moz-opacity: 0.75;
+            opacity: .75;
+            filter: alpha(opacity=75);
+        }
+        .white_content
+        {
+            display: none;
+            padding: 10px;
+            position: absolute;
+            top: 15%;
+            left: 25%;
+            width: 632px;
+            height: 445px;
+            border: 2px solid #007eff;
+            border-radius: 8px;
+            background-color: white;
+            z-index: 1002;
+            overflow: auto;
+        }
+    </style>
+    <script type="text/javascript" src="./base64.min.js"></script>
+    <title>六十四卦</title>
+</head>
+<body>
+    <div id="mainframe">
+        <p class="title">
+            六十四卦
+        </p>
+        <textarea id="orignalMsg" placeholder="施主，算卦？" rows="5"></textarea>
+        <div class="centerBlk">
+            <input class="Btn" type="button" id="gEncode" value="算卦" onclick="javascript:suangua()" />
+            <input class="Btn" type="button" id="gDecode" value="解卦" onclick="javascript:jiegua()" />
+        </div>
+        <textarea id="afterMsg" placeholder="卦象" rows="5"></textarea>
+       <p>
+            GitHub：<a href="https://github.com/yumusb/64gua" target="_blank">https://github.com/yumusb/64gua</a></p>
+
+    </div>
+</body>
+<script type="text/javascript">
+    var guaxiang = new Array('乾','坤','屯','蒙','需','讼','师','比','小畜','履','泰','否','同人','大有','谦','豫','随','蛊','临','观','噬嗑','贲','剥','复','无妄','大畜','颐','大过','坎','离','咸','恒','遁','大壮','晋','明夷','家人','睽','蹇','解','损','益','夬','姤','萃','升','困','井','革','鼎','震','艮','渐','归妹','丰','旅','巽','兑','涣','节','中孚','小过','既济','未济','卦');
+    var base64bytes = new Array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/','=');
+    function gdecode(str){
+        var tmp1 = "";
+        for (i=0;i<str.length;  i++) {
+            if (base64bytes[guaxiang.indexOf(str[i])] == undefined) {
+                tmp1 += base64bytes[guaxiang.indexOf(str[i]+str[i+1])];
+                i = i+1;
+            }else {
+                tmp1 += base64bytes[guaxiang.indexOf(str[i])];
+            }
+        }
+        return Base64.decode(tmp1);
+
+    }
+    function gencode(str){
+        var tmp1 = Base64.encode(str);
+        var tmp2 = ""
+        for (i=0;i<tmp1.length;  i++) {
+            tmp2+=guaxiang[base64bytes.indexOf(tmp1[i])];
+        }
+        return tmp2;
+    }
+    function suangua(){
+        var tmp = document.getElementById("orignalMsg").value;
+        tmp1 = gencode(tmp);
+        document.getElementById("afterMsg").value = tmp1;
+    }
+    function jiegua(){
+        var tmp = document.getElementById("afterMsg").value;
+        tmp1 = gdecode(tmp);
+        document.getElementById("orignalMsg").value = tmp1;        
+    }
+</script>
+</html>
