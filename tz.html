@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>提示</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0, user-scalable=no">
+</head>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+  }
+  .section {
+    margin: 0;
+    color: #222;
+    font-size: 12px;
+    padding: 70px 15px 20px;
+    text-align: center;
+  }
+  .ui-notice {
+    font-size: 16px;
+    margin-bottom: 13px;
+    font-weight: normal;
+    color: #878B99;
+  }
+  .url {
+    padding: 5px 0;
+    word-break: break-all;
+    font-size: 14px;
+    color: #03081A;
+  }
+  #complain {
+    
+  }
+  .ui-icon {
+    display: inline-block;
+    width: 80px;
+    margin: 0 auto 10px;
+  }
+  .bottom {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    color: #B0B3BF;
+  }
+  .bottom-item {
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    color: #40A0FF;
+    text-decoration: none;
+  }
+  .ui-arrow {
+    float: right;
+    display: none;
+    width: 15px;
+    height: 15px;
+  }
+  .copy-btn {
+    display: none;
+    width: 80%;
+    margin: 13px auto 0;
+    padding: 10px 0;
+    text-align: center;
+    background: #00CAFC;
+    color: #fff;
+    border-radius: 6px;
+  }
+  .copy-result {
+    display: none;
+    text-align: center;
+  }
+</style>
+<body>
+  <section class="section">
+    <img class="ui-icon" src="https://3gimg.qq.com/tele_safe/static/tmp/ic_alert_blue.png"></img>
+    <p class="ui-notice" id="mobile" style="display: none">如需浏览，请复制后使用浏览器访问，或者直接使用浏览器打开。</p>
+    <p class="ui-notice" id="pc" style="display: none">如需浏览，请复制后使用浏览器访问，或者直接使用浏览器打开。</p>
+    <div class="url" id="url">
+      <img class="ui-arrow" src="https://3gimg.qq.com/tele_safe/static/tmp/ic_arrow.png" />
+    </div>
+    <div class="copy-btn" id="copy-btn">
+      复制链接
+    </div>
+    <div class="copy-btn" id="open-btn">
+      试图打开
+    </div>    
+    <div class="copy-result">复制成功</div>
+  </section>
+</body>
+<script src="https://cdn.staticfile.org/jquery/1.8.2/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/clipboard.js/2.0.4/clipboard.min.js"></script>
+<script>
+var UA = navigator.userAgent
+if (UA.toLowerCase().indexOf('mobile') >= 0) {
+  $('#mobile').show()
+} else {
+  $('#pc').show()
+}
+function getParams(name){
+  var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+  var r = window.location.search.substr(1).match(reg);
+  if (r != null) return decodeURIComponent(r[2]);
+  return '';
+}
+
+var url = getParams('pfurl')
+var showUrl = url
+if (UA.toLowerCase().indexOf('qq/') == -1){
+  window.location.href=url;
+}
+if(url.length > 0) {
+  showUrl = url.slice(0, 30) + '...'
+  $('.ui-arrow').show()
+  $('#copy-btn').show()
+  $('#open-btn').show()
+  $('.ui-arrow').on('click', function() {
+    $('#url').html('')
+    var coUrl = url.length > 300 ? url.slice(0, 300) + '...' : url
+    document.getElementById('url').appendChild(document.createTextNode(coUrl))
+  })
+$('#open-btn').on('click', function() {
+  window.open('alipayqr://platformapi/startapp?saId=10000007&clientVersion=3.7.0.0718&qrcode='+url);
+  window.open('taobao://'+url);
+  })
+  var clipboard = new ClipboardJS('#copy-btn', {
+    text: function(trigger) {
+      return url
+    }
+  })
+  clipboard.on('success', function(e) {
+    $('.copy-result').show()
+    setTimeout(function(){$('.copy-result').hide()}, 1000)
+  })
+}
+document.getElementById('url').appendChild(document.createTextNode(showUrl))
+</script>
+</html>
